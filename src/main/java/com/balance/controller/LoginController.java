@@ -40,6 +40,12 @@ public class LoginController {
 	private PulseHistoryService pulseHistoryService;
 	private StepsHistoryService stepsHistoryService;
 	private AgeRangeService ageRangeService;
+	private EscalerasHistorialService escalerasHistorialService;
+
+	@Autowired
+	public void setEscalerasHistorialService(EscalerasHistorialService escalerasHistorialService) {
+		this.escalerasHistorialService = escalerasHistorialService;
+	}
 
 	@Autowired
     public void setStepsHistoryService(StepsHistoryService stepsHistoryService) {
@@ -139,13 +145,17 @@ public class LoginController {
         Integer calories=0;
         long distance=0;
         Integer bpm=0;
+        Integer escalonessubidos=0;
 
         Iterator<CaloriesHistory> iteratorC = caloriesHistoryService.listAllCaloriesHistorys().iterator();
         Iterator<StepsHistory> iteratorS = stepsHistoryService.listAllStepsHistory().iterator();
         Iterator<PulseHistory> iteratorP = pulseHistoryService.listAllPulseHistory().iterator();
 
 		Iterator<AgeRange> iteratorA = ageRangeService.listAllAgeRanges().iterator();
+		Iterator<EscalerasHistorial> iteratorED =escalerasHistorialService.listAllEscalerasHistorial().iterator();
 
+
+		EscalerasHistorial auxED = new EscalerasHistorial();
         StepsHistory auxS = new StepsHistory();
         CaloriesHistory auxC = new CaloriesHistory();
         PulseHistory auxP = new PulseHistory();
@@ -174,6 +184,16 @@ public class LoginController {
 				calories += auxC.getCalories();
 			}
         }
+
+		while(iteratorED.hasNext()){
+			auxED = iteratorED.next();
+			if(auxED.getUser().equals(user.getId()) &&
+					auxED.getDate().getDay()==fechaactual.getDay() &&
+					auxED.getDate().getMonth()==fechaactual.getMonth() &&
+					auxED.getDate().getYear()==fechaactual.getYear() ) {
+					escalonessubidos += auxED.getCantidad();
+			}
+		}
 
         PulseHistory fechaMayor = null;
 
@@ -224,6 +244,8 @@ public class LoginController {
         model.addAttribute("countCalories",calories);
         model.addAttribute("countDistance",distance);
         model.addAttribute("countBpm",bpm);
+		model.addAttribute("cantidad",escalonessubidos);
+
         model.addAttribute("id",user.getId());
 
 		model.addAttribute("metaStart",auxA2.getMetaStart());

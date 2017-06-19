@@ -30,6 +30,12 @@ public class BandController {
     private PulseHistoryService pulseHistoryService;
     private StepsHistoryService stepsHistoryService;
     private LocationHistoryService locationHistoryService;
+    private EscalerasHistorialService escalerasHistorialService;
+
+    @Autowired
+    public void setEscalerasHistorialService(EscalerasHistorialService escalerasHistorialService) {
+        this.escalerasHistorialService = escalerasHistorialService;
+    }
 
     @Autowired
     public void setStepsHistoryService(StepsHistoryService stepsHistoryService) {
@@ -68,8 +74,10 @@ public class BandController {
         pulseHistoryService.savePulseHistory(new PulseHistory(band.getBpm(), band.getFecha_registro(), band.getUser(), band.getIntensidad()));
         stepsHistoryService.saveStepsHistory(new StepsHistory(band.getSteps(), band.getDistance(), band.getUser(), band.getFecha_registro()));
         locationHistoryService.saveLocationHistory(new LocationHistory(band.getLatitude(), band.getLongitude(), band.getUser(), band.getFecha_registro()));
-        bandService.saveBand(band);
-
+        if(band.getCantidad()>=1 && band.getCantidad()<=1000) {
+            escalerasHistorialService.saveEscaleraHistorial(new EscalerasHistorial(band.getUpanddown(), band.getCantidad(), band.getUser(), band.getFecha_registro()));
+            bandService.saveBand(band);
+        }
         return band;
     }
 

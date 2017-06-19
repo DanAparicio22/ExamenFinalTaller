@@ -32,6 +32,7 @@
                         <li><a th:href="${'/user/CaloriesHistory'}" >Historial de calorias</a></li>
                         <li><a th:href="${'/user/PulseHistory'}" >Historial de pulsaciones</a></li>
                         <li><a th:href="${'/user/StepsHistory'}" >Historial de distancia</a></li>
+                        <li><a th:href="${'/user/escalerasHistorial'}" >Historial de escaleras</a></li>
 
                     </ul>
                 </li>
@@ -90,6 +91,12 @@
             });
         }
 
+        function updateEscaleras(){
+            $.getJSON( "/getEscaleras/" + idValue, function( data ) {
+                $('#cantidad').html(data.cantidad);
+            });
+        }
+
         function updatePulse(){
             $.getJSON( "/getPulse/" + idValue, function( data ) {
                 $('#bpm').html(data.bpm);
@@ -141,6 +148,7 @@
             updateDistance();
             updateCalories();
             updatePulse();
+            updateEscaleras();
             mapaUpdate++;
             if(mapaUpdate > 4) {
                 updateMap();
@@ -208,6 +216,15 @@
             </div>
         </div>
     </div>
+        <div class="col-sm-4 col-md-3">
+            <div class="thumbnail">
+                <div class="caption">
+                    <img src="/images/steps.png" alt="cantidad" width="242" height="200"></img>
+                    <h3>Escaleras subidas o bajadas: <span id="cantidad" class="label label-info" th:text="${cantidad}">countEsc</span></h3>
+
+                </div>
+            </div>
+        </div>
     <div class="col-sm-4 col-md-3">
             <div class="thumbnail">
                 <div class="caption">

@@ -2,6 +2,7 @@ package com.balance.model;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -19,8 +20,29 @@ public class Band {
     private Float longitude;
     private Integer calories;
     private Integer user;
+    private boolean upanddown;
+
+    @NotNull
+    private Integer cantidad;
+
     private Date fecha_evento;
     private String intensidad;
+
+    public boolean getUpanddown() {
+        return upanddown;
+    }
+
+    public void setUpanddown(boolean upanddown) {
+        this.upanddown = upanddown;
+    }
+
+    public Integer getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(Integer cantidad) {
+        this.cantidad = cantidad;
+    }
 
     public Integer getBpm() {
         return bpm;

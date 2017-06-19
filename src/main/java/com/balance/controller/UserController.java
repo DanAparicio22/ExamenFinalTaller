@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Controller
@@ -28,6 +31,12 @@ public class UserController {
     private StepsHistoryService stepsHistoryService;
     private LocationHistoryService locationHistoryService;
     private AgeRangeService ageRangeService;
+    private EscalerasHistorialService escalerasHistorialService;
+
+    @Autowired
+    public void setEscalerasHistorialService(EscalerasHistorialService escalerasHistorialService) {
+        this.escalerasHistorialService = escalerasHistorialService;
+    }
 
     @Autowired
     public void setAgeRangeService(AgeRangeService ageRangeService){
@@ -431,6 +440,57 @@ public class UserController {
         model.addAttribute("pulses", resp);
 
         return "limited/pulseHistory";
+    }
+
+    @RequestMapping(value = "/user/escalerasHistorial", method = RequestMethod.GET)
+    public String getEscaleraHistorial(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByEmail(auth.getName());
+        Iterator<EscalerasHistorial> iterator = escalerasHistorialService.listAllEscalerasHistorial().iterator();
+        ArrayList<EscalerasHistorial> resp = new ArrayList<>();
+        while(iterator.hasNext()){
+            EscalerasHistorial aux = iterator.next();
+            if(aux.getUser().equals(user.getId())) {
+                resp.add(aux);
+            }
+        }
+        model.addAttribute("user",user);
+        model.addAttribute("escaleras", resp);
+
+        return "limited/escalerasHistorial";
+    }
+    @RequestMapping(value = "/user/filtrar", method = RequestMethod.GET)
+    public String filtrarfechas(String fechainicio,String fechafin,Model model) {
+        System.out.println(fechainicio);
+        System.out.println(fechafin);
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Date startDate=new Date();
+        Date finishDate=new Date();
+        try {
+            startDate = df.parse(fechainicio);
+            finishDate=df.parse(fechafin);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        finishDate.setDate(finishDate.getDate()+1);
+        startDate.setDate(startDate.getDate()-1);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByEmail(auth.getName());
+        Iterator<EscalerasHistorial> iterator = escalerasHistorialService.listAllEscalerasHistorial().iterator();
+        ArrayList<EscalerasHistorial> resp = new ArrayList<>();
+        while(iterator.hasNext()){
+            EscalerasHistorial aux = iterator.next();
+            if(aux.getUser().equals(user.getId())) {
+                if(aux.getDate().before(finishDate) && aux.getDate().after(startDate)){
+                    resp.add(aux);
+                }
+
+            }
+        }
+        model.addAttribute("user",user);
+        model.addAttribute("escaleras", resp);
+
+        return "limited/escalerasHistorial";
     }
 
     @RequestMapping(value = "/user/StepsHistory", method = RequestMethod.GET)
